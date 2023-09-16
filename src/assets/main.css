@@ -1,6 +1,7 @@
 
 #app{
-  /*background: #000;*/
+  background: #1E1E1E;
+  height: 100vh;
 }
 body{
   margin: 0;
@@ -10,4 +11,15 @@ body{
 *{
   margin: 0;
   padding: 0;
+  color: white;
+  font-family: "Roboto", sans-serif;
+}
+.container{
+  max-width: 1300px;
+  margin: 0 auto auto;
+}
+button{
+  border: none;
+  background: #inherit;
+  color: black;
 }

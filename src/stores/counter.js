@@ -1,12 +1,15 @@
 import { ref, computed } from 'vue'
 import { defineStore } from 'pinia'
 
-export const useCounterStore = defineStore('counter', () => {
-  const count = ref(0)
-  const doubleCount = computed(() => count.value * 2)
-  function increment() {
-    count.value++
+export const useNoteStore = defineStore('note',  {
+  state: () => ({
+    data: null
+  }),
+  actions:{
+    async getNotes(){
+      const URL = 'http://localhost:3000/notes'
+      let response = await fetch(URL)
+      this.data = await response.json() || null
+    }
   }
-
-  return { count, doubleCount, increment }
 })
