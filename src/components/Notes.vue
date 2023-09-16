@@ -1,13 +1,14 @@
 <script>
 import {useNoteStore} from "@/stores/counter";
 import {mapStores} from "pinia";
+import router from "@/router";
 
 export default {
   name: "Notes",
-  data(){
-    return{
-
-    }
+  methods: {
+      pushPage(){
+        this.noteStore.newNotePage(`${this.noteStore.data.length + 1}`)
+      }
   },
   computed:{
     ...mapStores(useNoteStore)
@@ -20,23 +21,28 @@ export default {
 
 <template>
   <div class="main_wrapper">
-    <div class="add_new_note">+</div>
+    <div @click="pushPage" class="add_new_note">+</div>
     <div v-for="item in noteStore.data" class="note_item">
-      <h2 class="note_item_heading">{{item.heading}}</h2>
+      <div v-if="item?.heading">
+        <h2 class="note_item_heading">{{item?.heading}}</h2>
+      </div>
+      <div v-else>
+        <h2 class="note_item_heading">No heading</h2>
+      </div>
       <div class="note_item_inner">
         <div class="cuttedText ">
-          <span class="pre_todo" v-for="todo_short_item in item.to_do" >{{todo_short_item.title}}...</span>
+          <span class="pre_todo" v-for="todo_short_item in item.to_do" >{{todo_short_item?.title}}...</span>
         </div>
         <div>
-          <button class="button">Go</button>
-          <button class="button">Delete</button>
+          <button @click="$router.push({ path: `/note/${item.id}` })" class="button">Go</button>
+          <button @click="noteStore.deleteNotes(item.id)" class="button">Delete</button>
         </div>
       </div>
     </div>
   </div>
 </template>
 
-<style scoped>
+<style>
 .note_item_inner{
   display: flex;
   justify-content: space-around;
@@ -106,11 +112,17 @@ export default {
   display: grid;
   grid-template-columns: auto auto auto ;
   padding: 5px;
+  background: #1E1E1E;
 }
 .pre_todo{
   color: gray !important;
 }
 .note_item_heading{
   margin-bottom: 20px;
+  display: block;
+  width: 302.8px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
 </style>

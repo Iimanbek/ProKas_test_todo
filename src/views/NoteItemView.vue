@@ -1,12 +1,17 @@
 <script>
+
+import NoteTodoList from "@/components/NoteTodoList.vue";
 export default {
-  name: "NoteItemView"
+  name: "NoteItemView",
+  components:{
+    'v-note':NoteTodoList
+  },
 }
 </script>
 
 <template>
-  <div>
-    <h2>hello from item</h2>
+  <div class="container">
+    <v-note/>
   </div>
 </template>
 
