@@ -1,18 +1,19 @@
-import { ref, computed } from 'vue'
 import { defineStore } from 'pinia'
 
 export const useNoteStore = defineStore('note',  {
   state: () => ({
-    data: null,
-    noteItem:null,
-    inputValue:''
+    data: null,// данные всех обьектов заметок
+    noteItem:null,//данные обьекта задач
+    inputValue:'' // модель инпута с добавки новой задачи
   }),
   actions:{
+    // получение данных в основной странице
     async getNotes(){
       const URL = 'http://localhost:3000/notes'
       let response = await fetch(URL)
       this.data = await response.json() || null
     },
+    // Удаление самой заметки
     async deleteNotes(idNote){
       if (confirm('Are you sure that you want to delete it?')){
         const deleteMethod = {
@@ -27,6 +28,7 @@ export const useNoteStore = defineStore('note',  {
         this.data.splice(index, 1)
       }
     },
+    //перейти к созданию новой заметки
     async newNotePage(idNote){
       let name_of_Todo= prompt('Write the name of to do list page!!!')
       if (name_of_Todo){
@@ -49,12 +51,16 @@ export const useNoteStore = defineStore('note',  {
         alert('write something')
       }
     },
-    //то что ниже уже относится к второй странице изменеия
+    //------------------------------------------
+    //то что ниже уже относится к второй странице изменения
+    //------------------------------------------
+    // получение данных в самой заметки
     async getSingleNote(id){
       const URL =   `http://localhost:3000/notes/${id}`
       let response = await fetch(URL)
       this.noteItem = await response.json() || null
     },
+    // добавление задач
     async addToDoList(paramsId, pageHeading){
       if (this.inputValue) {
         this.noteItem.to_do.push({
@@ -81,6 +87,7 @@ export const useNoteStore = defineStore('note',  {
       console.log(this.noteItem.to_do)
       this.inputValue=''
     },
+    // удаление задач
     async deleteToDoList(todoID, pageHeading, paramsId){
       if (confirm('Are you sure that you want to delete it?')){
         let  index= this.noteItem.to_do.findIndex(i => i.id === todoID)
