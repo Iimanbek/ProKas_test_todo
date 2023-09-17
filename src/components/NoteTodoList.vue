@@ -6,7 +6,7 @@ export default {
   name: "NoteTodoList",
   data(){
     return{
-      toDoValue:''
+      toDoValue:'',
     }
   },
   computed:{
@@ -24,20 +24,27 @@ export default {
       <h2>{{noteStore?.noteItem?.heading}}</h2>
     </div>
     <form class="form">
-      <input type="email" class="form__field" placeholder="To - Do " v-model="noteStore.inputValue" />
+      <input  class="form__field" placeholder="To - Do " v-model="noteStore.inputValue" />
       <button @click="noteStore.addToDoList($route.params.id, noteStore?.noteItem?.heading)" type="button" class="btn btn--primary btn--inside uppercase">save</button>
     </form>
     <div class="list_inner" v-if="noteStore?.noteItem?.to_do">
       <ol v-for="deal in noteStore?.noteItem?.to_do">
         <li>
           <label class="li_inner">
-            <input type="checkbox" >
-            <span class="checkmark">{{deal.title}}</span>
+            <input  v-model="deal.status" @change="noteStore.changeStatusChecked(deal, noteStore?.noteItem?.heading, $route.params.id, deal.title)" type="checkbox">
+            <span class="checkmark">{{deal?.title}}</span>
           </label>
 
-          <div>
-            <button  class="button">change</button>
-            <button @click="noteStore.deleteToDoList(deal.id, noteStore?.noteItem?.heading, $route.params.id)" class="button">delete</button>
+          <div class="list_inner_button_wrap">
+            <div  v-if="deal.buttonStatus">
+              <button @click="noteStore.changeToDoList(deal)" class="button">change</button>
+            </div>
+            <div v-else>
+              <button @click="noteStore.changeToDoList(deal)" class="button">cancel</button>
+            </div>
+            <div>
+              <button @click="noteStore.deleteToDoList(deal.id, noteStore?.noteItem?.heading, $route.params.id)" class="button">delete</button>
+            </div>
           </div>
         </li>
       </ol>
@@ -49,6 +56,9 @@ export default {
 </template>
 
 <style scoped>
+.list_inner_button_wrap{
+  display: flex;
+}
 .li_inner input{
   scale: 1.5;
   margin-right: 10px;

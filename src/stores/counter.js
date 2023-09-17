@@ -3,8 +3,10 @@ import { defineStore } from 'pinia'
 export const useNoteStore = defineStore('note',  {
   state: () => ({
     data: null,// данные всех обьектов заметок
-    noteItem:null,//данные обьекта задач
-    inputValue:'' // модель инпута с добавки новой задачи
+    noteItem:null,//данные обьектов задач
+    inputValue:'', // модель инпута с добавки новой задачи
+    toDoItem:null,// обьект одной задачи
+    checkboxStatus: false
   }),
   actions:{
     // получение данных в основной странице
@@ -60,33 +62,6 @@ export const useNoteStore = defineStore('note',  {
       let response = await fetch(URL)
       this.noteItem = await response.json() || null
     },
-    // добавление задач
-    async addToDoList(paramsId, pageHeading){
-      if (this.inputValue) {
-        this.noteItem.to_do.push({
-          id: this.noteItem.to_do.length +1,
-          title:this.inputValue,
-          status: false
-        })
-        const putMethod = {
-          method:"PUT",
-          body:JSON.stringify({
-            "id":paramsId,
-            "heading": pageHeading,
-            "to_do":this.noteItem.to_do
-          }),
-          headers: {
-            'Content-type': 'application/json; charset=UTF-8',
-          }
-        }
-        const URL = `http://localhost:3000/notes/${paramsId}`
-        let response = await fetch(URL,putMethod)
-      }else {
-        alert('write something')
-      }
-      console.log(this.noteItem.to_do)
-      this.inputValue=''
-    },
     // удаление задач
     async deleteToDoList(todoID, pageHeading, paramsId){
       if (confirm('Are you sure that you want to delete it?')){
@@ -106,6 +81,101 @@ export const useNoteStore = defineStore('note',  {
         const URL = `http://localhost:3000/notes/${paramsId}`
         let response = await fetch(URL,putMethod)
       }
+    },
+    // добавление задач
+    async addToDoList(paramsId, pageHeading){
+
+      if (this.toDoItem){
+          let index = this.noteItem.to_do.findIndex(i => i.id === this.toDoItem.id)
+          this.noteItem.to_do[index] = {
+          id: this.toDoItem.id,
+          title:this.inputValue,
+          status: false,
+          buttonStatus: true
+        }
+        const putMethod = {
+          method:"PUT",
+          body:JSON.stringify({
+            "id":paramsId,
+            "heading": pageHeading,
+            "to_do":this.noteItem.to_do
+          }),
+          headers: {
+            'Content-type': 'application/json; charset=UTF-8',
+          }
+        }
+        const URL = `http://localhost:3000/notes/${paramsId}`
+        let response = await fetch(URL,putMethod)
+        //-----
+        this.toDoItem = null
+        this.noteItem.buttonStatus = !this.noteItem.buttonStatus
+        this.inputValue = ''
+      }
+      else{
+        if (this.inputValue) {
+          this.noteItem.to_do.push({
+            id: this.noteItem.to_do.length +1,
+            title:this.inputValue,
+            status: false,
+            buttonStatus: true
+          })
+          const putMethod = {
+            method:"PUT",
+            body:JSON.stringify({
+              "id":paramsId,
+              "heading": pageHeading,
+              "to_do":this.noteItem.to_do
+            }),
+            headers: {
+              'Content-type': 'application/json; charset=UTF-8',
+            }
+          }
+          const URL = `http://localhost:3000/notes/${paramsId}`
+          let response = await fetch(URL,putMethod)
+        }
+        else {
+          alert('write something')
+        }
+        this.inputValue=''
+      }
+    },
+    async changeToDoList(toDoItem){
+      if (toDoItem.buttonStatus) {
+        this.toDoItem = toDoItem
+        this.inputValue = toDoItem.title;
+      } else {
+        this.inputValue = '';
+        this.toDoItem = ''
+      }
+      toDoItem.buttonStatus = !toDoItem.buttonStatus;
+    },
+    async changeStatusChecked(toDoItem, pageHeading, paramsId, titleValue){
+      let index = this.noteItem.to_do.findIndex(i => i.id === toDoItem)
+      console.log(index)
+      // this.noteItem.to_do[index].id = toDoItem
+      // this.noteItem.to_do[index].title = titleValue;
+      // this.noteItem.to_do[index].status = !this.noteItem.to_do[index].status; // Изменяем состояние чекбокса
+      // this.noteItem.to_do[index].buttonStatus = true;
+      this.noteItem.to_do[index] = {
+        id: toDoItem.id,
+        title: titleValue,
+        status: !toDoItem.status, // изменяем статус
+        buttonStatus: true
+      };
+      console.log(this.noteItem.to_do[index])
+      const putMethod = {
+        method:"PUT",
+        body:JSON.stringify({
+          "id":paramsId,
+          "heading": pageHeading,
+          "to_do":this.noteItem.to_do
+        }),
+        headers: {
+          'Content-type': 'application/json; charset=UTF-8',
+        }
+      }
+      const URL = `http://localhost:3000/notes/${paramsId}`
+      let response = await fetch(URL,putMethod)
     }
   }
 })
