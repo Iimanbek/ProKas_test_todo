@@ -1,7 +1,6 @@
 <script>
 import {useNoteStore} from "@/stores/counter";
 import {mapStores} from "pinia";
-import router from "@/router";
 
 export default {
   name: "Notes",

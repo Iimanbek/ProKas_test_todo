@@ -152,10 +152,7 @@ export const useNoteStore = defineStore('note',  {
     async changeStatusChecked(toDoItem, pageHeading, paramsId, titleValue){
       let index = this.noteItem.to_do.findIndex(i => i.id === toDoItem)
       console.log(index)
-      // this.noteItem.to_do[index].id = toDoItem
-      // this.noteItem.to_do[index].title = titleValue;
-      // this.noteItem.to_do[index].status = !this.noteItem.to_do[index].status; // Изменяем состояние чекбокса
-      // this.noteItem.to_do[index].buttonStatus = true;
+
       this.noteItem.to_do[index] = {
         id: toDoItem.id,
         title: titleValue,
